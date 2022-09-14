@@ -32,6 +32,10 @@ function App() {
       <span id="error-message"> </span>
       <h3>Tareas</h3>
       <ul id="lista-tareas">
+        { /* Ordenamos la lista de prioridades convirtiendo con un 
+        método de la clase Tarea, la prioridad en un valor número del 1 al 3 
+        Para luego, mapear (AKA: convertir cada elemento de la lista en un JSX) 
+        la lista a un <li> (Componente TASK) */}
         {
           taskList
             .sort((a,b)=> b.priorityOrder() - a.priorityOrder())
