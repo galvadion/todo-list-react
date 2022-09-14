@@ -38,6 +38,7 @@ function App() {
             .map((task)=> <Task key={task.id} task={task} isRepeated={task.id == idOfRepeatedElement}/>)
         }
       </ul>
+      {/* Si la lista de tareas tiene elementos, mostrar botón */}
       {
         taskList.length > 0 && <button onClick={deleteAll} >Eliminar todo</button>
       }
