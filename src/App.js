@@ -32,6 +32,10 @@ function App() {
       setTaskList(data.map((task)=>new TaskModel(task.text,task.priority)))
     })
   },[])
+  /*
+  Cuando la página se carga (escuchamos al []), realizar un fetch (GET->) a nuestro servidor
+  para ir a buscar datos para renderizar en nuestra página
+  */
 
   return (
     <main>
