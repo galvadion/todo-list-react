@@ -4,11 +4,13 @@ import Form from './components/form';
 import { useEffect, useState } from 'react';
 import Task from './components/task';
 import {Task as TaskModel} from './model/task'
+import PacmanLoader from "react-spinners/PacmanLoader"
 
 function App() {
 
   const [taskList,setTaskList] = useState([])
   const [idOfRepeatedElement, setIdOfRepeatedElement] = useState("")
+  const [isLoading,setIsLoading]= useState(true)
 
   const addTaskToList = (task) => {
     if(taskList.every((canditate)=>canditate.description !== task.description)){
@@ -30,7 +32,7 @@ function App() {
     .then(response=>response.json())
     .then(data => {
       setTaskList(data.map((task)=>new TaskModel(task.text,task.priority)))
-    })
+    }).finally(()=> setIsLoading(false))
   },[])
   /*
   Cuando la página se carga (escuchamos al []), realizar un fetch (GET->) a nuestro servidor
@@ -44,17 +46,24 @@ function App() {
       <Form addTaskToList={addTaskToList} inputHasChanged={inputHasChanged} />
       <span id="error-message"> </span>
       <h3>Tareas</h3>
-      <ul id="lista-tareas">
-        { /* Ordenamos la lista de prioridades convirtiendo con un 
-        método de la clase Tarea, la prioridad en un valor número del 1 al 3 
-        Para luego, mapear (AKA: convertir cada elemento de la lista en un JSX) 
-        la lista a un <li> (Componente TASK) */}
-        {
-          taskList
-            .sort((a,b)=> b.priorityOrder() - a.priorityOrder())
-            .map((task)=> <Task key={task.id} task={task} isRepeated={task.id == idOfRepeatedElement}/>)
-        }
-      </ul>
+      {
+        isLoading ?
+        <PacmanLoader color="#3155a6" />
+        : (
+          <ul id="lista-tareas">
+            { /* Ordenamos la lista de prioridades convirtiendo con un 
+            método de la clase Tarea, la prioridad en un valor número del 1 al 3 
+            Para luego, mapear (AKA: convertir cada elemento de la lista en un JSX) 
+            la lista a un <li> (Componente TASK) */}
+            {
+              taskList
+                .sort((a,b)=> b.priorityOrder() - a.priorityOrder())
+                .map((task)=> <Task key={task.id} task={task} isRepeated={task.id == idOfRepeatedElement}/>)
+            }
+          </ul>
+        )
+      }
+      
       {/* Si la lista de tareas tiene elementos, mostrar botón */}
       {
         taskList.length > 0 && <button onClick={deleteAll} >Eliminar todo</button>
