@@ -1,8 +1,9 @@
 import logo from './logo.svg';
 import './App.css';
 import Form from './components/form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Task from './components/task';
+import {Task as TaskModel} from './model/task'
 
 function App() {
 
@@ -23,6 +24,14 @@ function App() {
   const inputHasChanged = () => setIdOfRepeatedElement("")
 
   const deleteAll = () =>setTaskList([])
+
+  useEffect(()=>{
+    fetch("http://localhost:3001/tasks")
+    .then(response=>response.json())
+    .then(data => {
+      setTaskList(data.map((task)=>new TaskModel(task.text,task.priority)))
+    })
+  },[])
 
   return (
     <main>
