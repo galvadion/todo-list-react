@@ -32,7 +32,8 @@ function App() {
     .then(response=>response.json())
     .then(data => {
       setTaskList(data.map((task)=>new TaskModel(task.text,task.priority)))
-    }).finally(()=> setIsLoading(false))
+    })
+    .finally(()=> setIsLoading(false))
   },[])
   /*
   Cuando la página se carga (escuchamos al []), realizar un fetch (GET->) a nuestro servidor
