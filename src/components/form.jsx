@@ -3,17 +3,27 @@ import { useEffect } from "react";
 import { useState } from "react";
 import {Task} from "../model/task";
 
-const Form = ({addTaskToList, inputHasChanged}) =>{
+const Form = ({addTaskToList, inputHasChanged,selectedTask}) =>{
 
     const [text, setText] = useState("")
     const [priority, setPriority] = useState("")
     const [isDisabled, setDisabled] = useState(true)
+
+    useEffect(()=>{
+        if(selectedTask){
+            console.log(selectedTask)
+            setText(selectedTask.description)
+            setPriority(selectedTask.priority)
+        }
+        
+    },[selectedTask])
+
     
 
     const [isRepeated,setIsRepeated] = useState(false)
 
     const createTask = () =>{
-        if(addTaskToList(new Task(text,priority))){
+        if(addTaskToList({description:text,priority:priority})){
             setText("")
             setPriority("")
         }else{
