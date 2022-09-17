@@ -18,7 +18,7 @@ fetch(url,{
   .then(onSuccess)
   .finally(onFinish)
 
-export const editTask = (id,task,onSuccess,onFinish) => 
+export const httpEditTask = (id,task,onSuccess,onFinish) => 
   fetch(`${url}/${id}`,{
             method: 'PUT',
             headers:{ 

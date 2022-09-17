@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Task from './task';
 import {Task as TaskModel} from '../model/task'
 import PacmanLoader from "react-spinners/PacmanLoader"
-import { addTask, getTasks, httpDeleteTask } from "../services/httpConsumer";
+import { addTask, getTasks, httpDeleteTask, httpEditTask } from "../services/httpConsumer";
 
 const TaskList = ()=>{
     
@@ -14,27 +14,20 @@ const TaskList = ()=>{
   const [selectedTask,setSelectedTask] = useState(null)
 
   const addTaskToList = (task) => {
-    if(taskList.every((canditate)=>canditate.description !== task.description)){
-        setIsLoading(true)
-        if(selectedTask){
-          editTask(selectedTask.id,task,() =>getTaskLists(),()=> {
-            setSelectedTask(null)
-            setIsLoading(false)
-          })
-        }else{
-          addTask(task,data =>{
-            setTaskList(taskList.concat(new TaskModel(data.description,data.priority,data.id)))
-        },()=>setIsLoading(false))
-        }
-        
+    if(taskDoesNotExists(task.description)){
+        handleUpload(task)
       return true
     }else{
-      setIdOfRepeatedElement(taskList.find((canditate)=>canditate.description == task.description).id)
+      setIdOfRepeatedElement(getIdOfRepeatedElement(task.description))
       return false
     }
-      
   }
+
   const inputHasChanged = () => setIdOfRepeatedElement("")
+
+  const taskDoesNotExists = (description) => taskList.every((canditate)=>canditate.description !== description)
+
+  const getIdOfRepeatedElement = (description) => taskList.find((canditate)=>canditate.description == description).id
 
   const deleteAll = () =>{
     setIsLoading(true)
@@ -45,10 +38,11 @@ const TaskList = ()=>{
     setIsLoading(false)
   }
 
-  const getTaskLists = () => getTasks(
-    data => {
-    setTaskList(data.map((task) => new TaskModel(task.description, task.priority, task.id)));
+  const getTaskLists = () => getTasks(data => {
+    setTaskList(data.map(adaptModelToDomain));
   },() => setIsLoading(false))
+
+  const adaptModelToDomain = (task) => new TaskModel(task.description, task.priority, task.id)
 
   useEffect(()=>{
     getTaskLists()
@@ -64,11 +58,23 @@ const TaskList = ()=>{
         .then(data =>getTaskLists())
   }
 
-  const editTask = (task) =>{
+  const selectedTaskToEdit = (task) =>{
     setSelectedTask(task)
   }
 
-
+  const handleUpload = (task) =>{
+    setIsLoading(true)
+        if(selectedTask){
+          httpEditTask(selectedTask.id,task,() =>getTaskLists(),()=> {
+            setSelectedTask(null)
+            setIsLoading(false)
+          })
+        }else{
+          addTask(task,data =>{
+            setTaskList(taskList.concat(new TaskModel(data.description,data.priority,data.id)))
+        },()=>setIsLoading(false))
+        }
+  }
 
     return (
         <>
@@ -97,7 +103,7 @@ const TaskList = ()=>{
                       task={task} 
                       isRepeated={task.id == idOfRepeatedElement}
                       deleteTask={deleteTask}
-                      editTask={editTask}
+                      editTask={selectedTaskToEdit}
                       />)
                 }
                 </ul>
